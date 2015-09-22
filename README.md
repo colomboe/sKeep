@@ -23,7 +23,7 @@ When Edge will support native PBKDF2 algorithm, drop support for IE11 in order t
 ## Installation/development
 
 sKeep is developed in TypeScript, so you need a TypeScript compiler in order to generate the app js file. Then, all you need is to deploy the app on a HTTPS web server.
-You have to obtain a key from the Dropbox developer portal by creating a new App. Insert the data about your app inside the   source/SkeepDropbox.tx file before compiling.
+You have to obtain a key from the Dropbox developer portal by creating a new App. Insert the data about your app inside the   source/SkeepDropbox.ts file before compiling.
 
 
 
