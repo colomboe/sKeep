@@ -1,0 +1,68 @@
+﻿#welcomePane {
+    z-index: 10000;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: darkslategray;
+    background-image: url('../images/intro.jpg');
+    background-position: center;
+	background-size: 100%;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition-property: top;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+}
+
+#welcomePane div {
+    text-align: center;
+    margin: auto;
+}
+
+#welcomePane div h1 {
+    font-size: 96px;
+    margin-bottom: 50px;
+}
+
+#welcomePane div h2 {
+    font-style: italic;
+    margin-bottom: 50px;
+}
+
+#welcomePane div button {
+    color: white;
+    padding: 20px;
+    background-color: rgba(0,0,0,.6);
+    border-color: dimgray;
+    display: none;
+}
+
+#welcomePane div progress {
+    display: none;
+    transform: scale(2,2);
+}
+
+#welcomePane div button:hover {
+    border-color: white;
+}
+
+/* VERSIONE MOBILE */
+
+@media (max-width: 640px) {
+
+    #welcomePane {
+        background-size: cover;
+    }
+
+    #welcomePane div h1 {
+        font-size: 48px;
+    }
+
+    #welcomePane div h2 {
+        font-size: 18px;
+    }
+}

@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8" />
+    <title>sKeep</title>
+    <meta name="msapplication-TileColor" content="#4D4D4D">
+    <meta name="msapplication-TileImage" content="ms-icon-144x144.png">
+    <meta name="theme-color" content="#4D4D4D">
+    <link href="libs/winjs/css/ui-light.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/app.css" type="text/css" />
+    <script src="libs/promise.min.js"></script>
+    <script src="libs/winjs/js/base.min.js"></script>
+    <script src="libs/winjs/js/ui.min.js"></script>
+    <script src="libs/encoding.js"></script>
+    <script src="libs/dropbox.min.js"></script>
+    <script src="libs/sha1.js"></script>
+    <script src="libs/pbkdf2.js"></script>
+    <script src="skeep.js"></script>
+</head>
+<body class="win-type-body">
+    <div id="modeIndicator">&nbsp;</div>
+
+    <div id="aboutDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
+             title: 'About sKeep',
+             primaryCommandText: 'Close',
+        }">
+        <br />
+        sKeep version 2.0.0<br />
+        Credits: Emanuele Colombo
+    </div>
+
+    <div id="openNotebookDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
+             title: 'Open notebook',
+             primaryCommandText: 'Open',
+             secondaryCommandText: 'Cancel'
+        }">
+        <br/>
+        Insert the password for encryption:
+        <input class="win-textbox" type="password" id="openNotebookPasswordText" style="width: 100%">
+    </div>
+
+    <div id="newNotebookDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
+             title: 'New notebook',
+             primaryCommandText: 'Create',
+             secondaryCommandText: 'Cancel'
+        }">
+        <br />
+        Please insert the name of the notebook you want to create:
+        <input class="win-textbox" type="text" id="createNotebookNameText" style="width: 100%">
+        Insert the password to use for encryption:
+        <input class="win-textbox" type="password" id="createNotebookPasswordText" style="width: 100%">
+        And repeat the password to use for encryption:
+        <input class="win-textbox" type="password" id="createNotebookPasswordRepeatText" style="width: 100%">
+    </div>
+
+    <div id="loadingDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
+             title: 'Please wait..'
+             }">
+        <br />
+        Operation is in progress, just wait a moment. If it takes too much time, check your internet connection.
+    </div>
+
+    <div id="deleteConfirmDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
+             title: 'Delete note',
+             primaryCommandText: 'Cancel',
+             secondaryCommandText: 'Delete'
+        }">
+        <br />
+        Are you sure to delete the selected note?
+    </div>
+
+    <div id="showPasswordDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
+             title: 'Copy password',
+             primaryCommandText: 'Close'
+             }">
+        <br />
+        You can get your password here and use it:<br />
+        <input class="win-textbox" type="text" id="passwordShowText" style="width: 100%">
+    </div>
+
+    <div id="app">
+
+        <div id="welcomePane">
+            <div>
+                <h1 class="win-h1">sKeep</h1>
+                <h2 class="win-h2">your simple and secure<br />password and note manager</h2>
+                <button id="cmdLogin" class="win-button">Login with Dropbox</button>
+                <progress id="progressRing" class="win-progress-ring"></progress>
+            </div>
+        </div>
+
+        <div id="top-bar">
+            <button id="splitViewButton" class="win-splitviewpanetoggle"
+                    data-win-control="WinJS.UI.SplitViewPaneToggle"
+                    data-win-options="{ splitView: select('.splitView') }"></button>
+            <div class="app-title-bar">
+                <div id="labelTitle" class="win-type-subtitle app-title-text">Notebook list</div>
+                <div id="labelNotebookTitle" class="win-type-subtitle app-title-text" style="display: none">---</div>
+                <div class="app-title-bar-add-button">
+                    <div id="cmdAdd" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ icon: 'add'}"></div>
+                </div>
+            </div>
+        </div>
+
+         <div id="mainSplitView" class="splitView" data-win-control="WinJS.UI.SplitView" data-win-options="{
+            openedDisplayMode: WinJS.UI.SplitView.OpenedDisplayMode.overlay,
+            closedDisplayMode: WinJS.UI.SplitView.ClosedDisplayMode.none }"> 
+
+                <!-- Pane area -->
+                <div>
+                    <div class="nav-bar-pane">
+                        <div id="cmdNotebookList" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ label: 'Notebook list', icon: 'library'}"></div>
+                        <div id="cmdNotesList" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ label: 'Notes and passwords', icon: 'protecteddocument'}"></div>
+                        <div id="cmdLogout" class="nav-bar-pane-bottom" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ label: 'Logout', icon: 'blockcontact'}"></div>
+                        <div id="cmdAbout" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ label: 'About sKeep', icon: 'help'}"></div>
+                    </div>
+                </div>
+
+                <!-- Content area -->
+                <div id="contentArea">
+                    
+                    <div id="notebookListPane">
+                        <div class="notebookListTemplate" data-win-control="WinJS.Binding.Template" style="display: none">
+                            <div class="notebookListTemplateElement">
+                                <span class="notebookElementName" data-win-bind="textContent: name"></span>
+                            </div>
+                        </div>
+
+                        <div id="notebookListView" class="win-selectionstylefilled"
+                             data-win-control="WinJS.UI.ListView" data-win-options="{
+                            itemTemplate: select('.notebookListTemplate'),
+                            selectionMode: 'single',
+                            tapBehavior: 'invokeOnly',
+                            layout: { type: WinJS.UI.GridLayout, orientation: WinJS.UI.Orientation.vertical }
+                        }">
+                        </div>
+                    </div>
+
+                    <div id="notesPane" style="display: none;">
+                        <div id="notesListPane">
+                            <div id="searchBox">
+                                <div id="searchBoxBox" data-win-control="WinJS.UI.SearchBox"
+                                     data-win-options="{ placeholderText: 'Search for a note',
+														    focusOnKeyboardInput: true,
+														    searchHistoryDisabled: false,
+														    searchHistoryContext: 'notes' }">
+                                </div>
+                            </div>  
+                            <div class="noteListTemplate" data-win-control="WinJS.Binding.Template" style="display: none">
+                                <div class="noteListTemplateElement">
+                                    <div class="noteElementName" data-win-bind="textContent: title"></div>
+                                    <div class="noteElementText" data-win-bind="textContent: link"></div>
+                                </div>
+                            </div>
+
+                            <div id="noteListView" class="win-selectionstylefilled"
+                                 data-win-control="WinJS.UI.ListView" data-win-options="{
+                                itemTemplate: select('.noteListTemplate'),
+                                selectionMode: 'single',
+                                tapBehavior: WinJS.UI.TapBehavior.directSelect,
+                                layout: { type: WinJS.UI.ListLayout }
+                            }">
+                            </div>
+
+                        </div>
+                        <div id="notesViewPane">
+                            <div id="noteHeader" class="note-header">
+                                <div class="win-h1" id="titleLabel"></div>
+                                <div class="win-h4" id="linkLabel"></div>
+                            </div>
+                            <div id="noteHeaderEdit"  class="note-header" style="display: none;">
+                                <input id="titleText" class="win-h2" type="text" value="Fineco Online" />
+                            </div>
+                            <div id="noteBody" class="note-body"></div>
+                            <div id="noteBodyEdit" class="note-body" style="display: none;">
+                                <textarea id="bodyText"></textarea>
+                            </div>
+                            <div id="noteToolbar" data-win-control="WinJS.UI.ToolBar">
+                                <button data-win-control="WinJS.UI.Command" data-win-options="{
+			                        id:'cmdBack',
+			                        label:'back',
+			                        section:'primary',
+			                        type:'button',
+			                        icon: 'back'}"></button>
+                                <button data-win-control="WinJS.UI.Command" data-win-options="{
+			                        id:'cmdEdit',
+			                        label:'edit',
+			                        section:'primary',
+			                        type:'button',
+			                        icon: 'edit'}"></button>
+                                <button data-win-control="WinJS.UI.Command" data-win-options="{
+			                        id:'cmdDelete',
+			                        label:'delete',
+			                        section:'primary',
+			                        type:'button',
+			                        icon: 'delete'}"></button>
+                            </div>
+                            <div id="noteToolbarEdit" data-win-control="WinJS.UI.ToolBar" style="display: none;">
+                                <button data-win-control="WinJS.UI.Command" data-win-options="{
+			                        id:'cmdGenerate',
+			                        label:'generate',
+			                        section:'primary',
+			                        type:'button',
+			                        icon: 'permissions'}"></button>
+                                <button data-win-control="WinJS.UI.Command" data-win-options="{
+			                        id:'cmdSave',
+			                        label:'confirm',
+			                        section:'primary',
+			                        type:'button',
+			                        icon: 'save'}"></button>
+                                <button data-win-control="WinJS.UI.Command" data-win-options="{
+			                        id:'cmdCancel',
+			                        label:'cancel',
+			                        section:'primary',
+			                        type:'button',
+			                        icon: 'cancel'}"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+    </div>
+
+</body>
+</html>

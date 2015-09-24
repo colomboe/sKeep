@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "out": "skeep.js",
+        "sourceMap": true
+    },
+    "files": [
+        "source/*.ts",
+        "typings/*.d.ts"
+    ]
+}
