@@ -65,6 +65,7 @@ class SkeepNotebookManager {
 
                 case 0: parser = new FileFormatV0(); break;
                 case 1: if (ieDetected) parser = new FileFormatV1_IE(); else parser = new FileFormatV1(); break;
+                case 2: if (ieDetected) parser = new FileFormatV2_IE(); else parser = new FileFormatV2(); break;
                 default:
                     alert("Invalid file version!");
                     return;
@@ -74,6 +75,10 @@ class SkeepNotebookManager {
                 this.currentData = data;
                 this.sdfjaoir3209fj2ihfio = password;
                 ui.fillFromNotebook(data);
+            }).catch((error: any) => {
+                console.log(error);
+                ui.showLoadingMessage(false);
+                alert("An error has occurred while deciphering your data (wrong password?).");
             });
         });
     }

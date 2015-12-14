@@ -14,9 +14,9 @@ var ui: UIManager;
 function getDefaultFileFormat(): FileFormat {
 
     if (ieDetected)
-        return new FileFormatV1_IE();
+        return new FileFormatV2_IE();
     else
-        return new FileFormatV1();
+        return new FileFormatV2();
 }
 
 var ieDetected = true
