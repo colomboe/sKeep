@@ -16,10 +16,6 @@ Browser support is the following:
  * Firefox 40 or later
  * Chrome 45 or later
 
-## Roadmap
-
-When Edge will support native PBKDF2 algorithm, drop support for IE11 in order to obtain a better password/key security with higher iteration values.
-
 ## Installation/development
 
 sKeep is developed in TypeScript, so you need a TypeScript compiler in order to generate the app js file. Then, all you need is to deploy the app on a HTTPS web server.
