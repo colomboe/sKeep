@@ -1,87 +1,146 @@
-﻿/// <reference path="../typings/dropboxjs.d.ts" />
+﻿/// <reference path="../typings/dropbox-sdk-js.ts" />
 /// <reference path="skeepstorage.ts" />
 
 class SkeepDropbox implements SkeepStorage {
 
-    private static key: Dropbox.Credentials = { key: "" };
-    private client: Dropbox.Client = null;
+    private static key: string = "h0jgf9nop7iztoc";
+    private client: Dropbox = null;
+    private token: string;
+    
+    getAccessTokenFromUrl() : string {
+        return this.parseQueryString(window.location.hash).access_token;
+    }
+    
+    getStateFromUrl() : string {
+        return this.parseQueryString(window.location.hash).state;
+    }
+
+    getAccessTokenFromStorage() : string {
+        return window.localStorage.getItem("skeep-token");
+    }
     
     init(callback: (result: boolean) => void) {
-        if (this.client == null)
-            this.client = new Dropbox.Client(SkeepDropbox.key);
-        this.client.reset();
-        var opt: Dropbox.AuthenticateOptions = {
-            interactive: false
-        };
         
-        this.client.authenticate({ interactive: false }, (err: Dropbox.ApiError|Dropbox.AuthError, client: Dropbox.Client): void => {
-            callback(client.isAuthenticated());
-        });
+        if (this.client == null)
+            this.client = new Dropbox({ clientId: SkeepDropbox.key });
+
+        var urlToken = this.getAccessTokenFromUrl();
+        var storageToken = this.getAccessTokenFromStorage();     
+        if (!!urlToken) {
+            this.token = this.getAccessTokenFromUrl();
+            var state = this.getStateFromUrl();
+            this.client.setAccessToken(this.token);
+            var storedState = window.localStorage.getItem("skeep-state");
+            if (state === storedState) {
+                window.localStorage.setItem("skeep-token", this.token);
+            }
+            else {
+                window.localStorage.removeItem("skeep-state");
+                this.client.authTokenRevoke(this.token);
+                callback(false);
+            }
+        }
+        else if (!!storageToken) {
+            this.token = storageToken;
+            this.client.setAccessToken(this.token);
+        }
+        
+        callback(this.token != null);
     }
 
     login(callback: (result: boolean) => void) {
         
-        this.client.reset();
-        if (!this.client.isAuthenticated()) {
-            this.client.authenticate((err: Dropbox.ApiError|Dropbox.AuthError, client: Dropbox.Client): void => {
-                if (err != null) {
-                    if (err instanceof Dropbox.ApiError)
-                        console.log(err.status + " - " + err.responseText);
-                    else if (err instanceof Dropbox.AuthError) {
-                        console.log(err.code + " - " + err.description);
-                    }
-                    callback(false);
-                }
-                else
-                    callback(true);
-            });
-        }
-        else
-            callback(true);
+        var state: string = (Math.random()*1e32).toString(36);
+        window.localStorage.setItem("skeep-state", state);
+        window.location.href = this.client.getAuthenticationUrl(window.location.href, state);
     }
 
     listFiles(callback: (result: string[]) => void): void {
 
-        this.client.readdir(".", (err: Dropbox.ApiError, filenames: string[], stat: Dropbox.File.Stat, folderEntries: Dropbox.File.Stat[]): void => {
-            if (err != null)
-                alert(err.status + " - " + err.response);
-            else
-                callback(filenames);
-        });
+        this.client.filesListFolder({ path: "", recursive: false, include_media_info: false, include_deleted: false, include_has_explicit_shared_members: false })
+            .then((res: DropboxSdkJs.FilesListFolderResult): void => {
+                var names: string[] = new Array();
+                for (var i = 0; i < res.entries.length; i++) {
+                    var e = res.entries[i];
+                    names.push(e.name);
+                }
+                callback(names);
+            });
     }
 
     loadFile(fileName: string, callback: (data: ArrayBuffer) => void): void {
 
-        this.client.readFile(fileName, { arrayBuffer: true }, (err: Dropbox.ApiError, fileContents: any): void => {
-            if (err != null)
-                alert(err.status + " - " + err.response);
-            else
-                callback(<ArrayBuffer> fileContents);
-        });
+        this.client.filesDownload({ path: "/" + fileName }).then((data: DropboxSdkJs.FilesFileMetadata): void => {
+                
+                var fileReader = new FileReader();
+                fileReader.onload = function() {
+                    callback(this.result);
+                };
+                fileReader.readAsArrayBuffer(data.fileBlob);
+            }
+        );
     }
 
     exists(fileName: string, callback: (exists: boolean) => void): void {
 
-        this.client.stat(fileName, (err, stat) => {
-
-            callback((!err) && (stat.isRemoved == false));
+        this.client.filesGetMetadata({ path: "/" + fileName, include_media_info: false, include_deleted: false, include_has_explicit_shared_members: false }).then((data: DropboxSdkJs.FilesFileMetadata): void => {
+            callback(true);
+        })
+        .catch(() => {
+            callback(false);
         });
+
     }
 
     saveFile(fileName: string, data: any, callback: (result: boolean) => void): void {
 
-        this.client.writeFile(fileName, data, (err, stat) => {
-
-            if (err) console.log(err);
-            callback(!err);
-        });
+        this.client.filesUpload({ autorename: false, mode: { ".tag": "overwrite" }, path: "/" + fileName, contents: data, mute: false })
+        .then(() => { callback(true); })
+        .catch(() => { callback(false); });
     }
 
     logout(callback: () => void): void {
 
-        this.client.signOut((err: Dropbox.ApiError) => {
-            if (err) console.log(err);
-            callback();
-        });
+        window.localStorage.removeItem("skeep-state");
+        this.client.authTokenRevoke(this.token).then(() => { callback(); })
+        this.token = null;
+    }
+    
+    parseQueryString(str: string) : any {
+      var ret = Object.create(null);
+
+      if (typeof str !== 'string') {
+        return ret;
+      }
+
+      str = str.trim().replace(/^(\?|#|&)/, '');
+
+      if (!str) {
+        return ret;
+      }
+
+      str.split('&').forEach(function (param) {
+        var parts = param.replace(/\+/g, ' ').split('=');
+        // Firefox (pre 40) decodes `%3D` to `=`
+        // https://github.com/sindresorhus/query-string/pull/37
+        var key = parts.shift();
+        var val = parts.length > 0 ? parts.join('=') : undefined;
+
+        key = decodeURIComponent(key);
+
+        // missing `=` should be `null`:
+        // http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
+        val = val === undefined ? null : decodeURIComponent(val);
+
+        if (ret[key] === undefined) {
+          ret[key] = val;
+        } else if (Array.isArray(ret[key])) {
+          ret[key].push(val);
+        } else {
+          ret[key] = [ret[key], val];
+        }
+      });
+
+      return ret;
     }
 }

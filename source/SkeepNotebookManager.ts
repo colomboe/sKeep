@@ -87,8 +87,10 @@ class SkeepNotebookManager {
 
         storage.exists(name + ".skeep", (exists: boolean) => {
 
-            if (exists)
+            if (exists) {
                 alert("A notebook with this name already exists");
+                callback();
+            }
             else {
 
                 var nnb: NotebookData = { name: name, entries: null };
