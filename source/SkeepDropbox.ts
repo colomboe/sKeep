@@ -50,7 +50,9 @@ class SkeepDropbox implements SkeepStorage {
 
     login(callback: (result: boolean) => void) {
         
-        var state: string = (Math.random()*1e32).toString(36);
+        var state: string = "";
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (var i = 16; i > 0; --i) state += chars[Math.round(Math.random() * (chars.length - 1))];
         window.localStorage.setItem("skeep-state", state);
         window.location.href = this.client.getAuthenticationUrl(window.location.href, state);
     }
