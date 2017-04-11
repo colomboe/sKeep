@@ -1,13 +1,14 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "noImplicitAny": false,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "out": "skeep.js",
-        "sourceMap": true
-    },
-    "exclude": [
-        "libs"
-    ]
+  "compilerOptions": {
+//    "target": "es6",
+    "module": "system",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "out": "skeep.js",
+    "sourceMap": true
+  },
+  "exclude": [
+    "libs"
+  ]
 }

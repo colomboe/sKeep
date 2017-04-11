@@ -1,0 +1,7 @@
+enum UIState {
+    LOGIN,
+    LOADING_NOTEBOOKS,
+    NOTEBOOKS_LIST,
+    NOTES_LIST,
+    NOTE
+}

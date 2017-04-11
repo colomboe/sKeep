@@ -1,227 +1,306 @@
-﻿<!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta charset="utf-8" />
     <title>sKeep</title>
-    <meta name="msapplication-TileColor" content="#4D4D4D">
-    <meta name="msapplication-TileImage" content="ms-icon-144x144.png">
-    <meta name="theme-color" content="#4D4D4D">
-    <link href="libs/winjs/css/ui-light.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="css/app.css" type="text/css" />
-    <script src="libs/promise.min.js"></script>
-    <script src="libs/winjs/js/base.min.js"></script>
-    <script src="libs/winjs/js/ui.min.js"></script>
-    <script src="libs/encoding.js"></script>
-    <script src="libs/dropbox-sdk.min.js"></script>
-    <script src="libs/asmcrypto.js"></script>
-    <script src="skeep.js"></script>
+    <meta charset="utf-8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="style.css" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="style-mobile.css" media="screen,projection"/>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="libs/dropbox-sdk.min.js"></script>
+    <script type="text/javascript" src="libs/encoding.js"></script>
+    <script type="text/javascript" src="libs/asmcrypto.js"></script>
+    <script type="text/javascript" src="libs/materialize.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.6.4/showdown.min.js"></script>
+    <script type="text/javascript" src="skeep.js"></script>
 </head>
-<body class="win-type-body">
-    <div id="modeIndicator">&nbsp;</div>
 
-    <div id="aboutDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
-             title: 'About sKeep',
-             primaryCommandText: 'Close',
-        }">
-        <br />
-        sKeep version 2.1.0<br />
-        Credits: Emanuele Colombo
-    </div>
-
-    <div id="openNotebookDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
-             title: 'Open notebook',
-             primaryCommandText: 'Open',
-             secondaryCommandText: 'Cancel'
-        }">
-        <br/>
-        Insert the password for encryption:
-        <input class="win-textbox" type="password" id="openNotebookPasswordText" style="width: 100%">
-    </div>
-
-    <div id="newNotebookDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
-             title: 'New notebook',
-             primaryCommandText: 'Create',
-             secondaryCommandText: 'Cancel'
-        }">
-        <br />
-        Please insert the name of the notebook you want to create:
-        <input class="win-textbox" type="text" id="createNotebookNameText" style="width: 100%">
-        Insert the password to use for encryption:
-        <input class="win-textbox" type="password" id="createNotebookPasswordText" style="width: 100%">
-        And repeat the password to use for encryption:
-        <input class="win-textbox" type="password" id="createNotebookPasswordRepeatText" style="width: 100%">
-    </div>
-
-    <div id="loadingDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
-             title: 'Please wait..'
-             }">
-        <br />
-        Operation is in progress, just wait a moment. If it takes too much time, check your internet connection.
-    </div>
-
-    <div id="deleteConfirmDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
-             title: 'Delete note',
-             primaryCommandText: 'Cancel',
-             secondaryCommandText: 'Delete'
-        }">
-        <br />
-        Are you sure to delete the selected note?
-    </div>
-
-    <div id="showPasswordDialog" data-win-control="WinJS.UI.ContentDialog" data-win-options="{
-             title: 'Copy password',
-             primaryCommandText: 'Close'
-             }">
-        <br />
-        You can get your password here and use it:<br />
-        <input class="win-textbox" type="text" id="passwordShowText" style="width: 100%">
-    </div>
-
-    <div id="app">
-
-        <div id="welcomePane">
-            <div>
-                <h1 class="win-h1">sKeep</h1>
-                <h2 class="win-h2">your simple and secure<br />password and note manager</h2>
-                <button id="cmdLogin" class="win-button">Login with Dropbox</button>
-                <progress id="progressRing" class="win-progress-ring"></progress>
-            </div>
-        </div>
-
-        <div id="top-bar">
-            <button id="splitViewButton" class="win-splitviewpanetoggle"
-                    data-win-control="WinJS.UI.SplitViewPaneToggle"
-                    data-win-options="{ splitView: select('.splitView') }"></button>
-            <div class="app-title-bar">
-                <div id="labelTitle" class="win-type-subtitle app-title-text">Notebook list</div>
-                <div id="labelNotebookTitle" class="win-type-subtitle app-title-text" style="display: none">---</div>
-                <div class="app-title-bar-add-button">
-                    <div id="cmdAdd" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ icon: 'add'}"></div>
+<body>
+<div id="modeIndicator">&nbsp;</div>
+<div class="wait">
+    <div>
+        <div class="preloader-wrapper active">
+            <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
                 </div>
             </div>
         </div>
-
-         <div id="mainSplitView" class="splitView" data-win-control="WinJS.UI.SplitView" data-win-options="{
-            openedDisplayMode: WinJS.UI.SplitView.OpenedDisplayMode.overlay,
-            closedDisplayMode: WinJS.UI.SplitView.ClosedDisplayMode.none }"> 
-
-                <!-- Pane area -->
-                <div>
-                    <div class="nav-bar-pane">
-                        <div id="cmdNotebookList" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ label: 'Notebook list', icon: 'library'}"></div>
-                        <div id="cmdNotesList" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ label: 'Notes and passwords', icon: 'protecteddocument'}"></div>
-                        <div id="cmdLogout" class="nav-bar-pane-bottom" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ label: 'Logout', icon: 'blockcontact'}"></div>
-                        <div id="cmdAbout" data-win-control="WinJS.UI.NavBarCommand" data-win-options="{ label: 'About sKeep', icon: 'help'}"></div>
-                    </div>
-                </div>
-
-                <!-- Content area -->
-                <div id="contentArea">
-                    
-                    <div id="notebookListPane">
-                        <div class="notebookListTemplate" data-win-control="WinJS.Binding.Template" style="display: none">
-                            <div class="notebookListTemplateElement">
-                                <span class="notebookElementName" data-win-bind="textContent: name"></span>
-                            </div>
-                        </div>
-
-                        <div id="notebookListView" class="win-selectionstylefilled"
-                             data-win-control="WinJS.UI.ListView" data-win-options="{
-                            itemTemplate: select('.notebookListTemplate'),
-                            selectionMode: 'single',
-                            tapBehavior: 'invokeOnly',
-                            layout: { type: WinJS.UI.GridLayout, orientation: WinJS.UI.Orientation.vertical }
-                        }">
-                        </div>
-                    </div>
-
-                    <div id="notesPane" style="display: none;">
-                        <div id="notesListPane">
-                            <div id="searchBox">
-                                <div id="searchBoxBox" data-win-control="WinJS.UI.SearchBox"
-                                     data-win-options="{ placeholderText: 'Search for a note',
-														    focusOnKeyboardInput: true,
-														    searchHistoryDisabled: false,
-														    searchHistoryContext: 'notes' }">
-                                </div>
-                            </div>  
-                            <div class="noteListTemplate" data-win-control="WinJS.Binding.Template" style="display: none">
-                                <div class="noteListTemplateElement">
-                                    <div class="noteElementName" data-win-bind="textContent: title"></div>
-                                    <div class="noteElementText" data-win-bind="textContent: link"></div>
-                                </div>
-                            </div>
-
-                            <div id="noteListView" class="win-selectionstylefilled"
-                                 data-win-control="WinJS.UI.ListView" data-win-options="{
-                                itemTemplate: select('.noteListTemplate'),
-                                selectionMode: 'single',
-                                tapBehavior: WinJS.UI.TapBehavior.directSelect,
-                                layout: { type: WinJS.UI.ListLayout }
-                            }">
-                            </div>
-
-                        </div>
-                        <div id="notesViewPane">
-                            <div id="noteHeader" class="note-header">
-                                <div class="win-h1" id="titleLabel"></div>
-                                <div class="win-h4" id="linkLabel"></div>
-                            </div>
-                            <div id="noteHeaderEdit"  class="note-header" style="display: none;">
-                                <input id="titleText" class="win-h2" type="text" value="Fineco Online" />
-                            </div>
-                            <div id="noteBody" class="note-body"></div>
-                            <div id="noteBodyEdit" class="note-body" style="display: none;">
-                                <textarea id="bodyText"></textarea>
-                            </div>
-                            <div id="noteToolbar" data-win-control="WinJS.UI.ToolBar">
-                                <button data-win-control="WinJS.UI.Command" data-win-options="{
-			                        id:'cmdBack',
-			                        label:'back',
-			                        section:'primary',
-			                        type:'button',
-			                        icon: 'back'}"></button>
-                                <button data-win-control="WinJS.UI.Command" data-win-options="{
-			                        id:'cmdEdit',
-			                        label:'edit',
-			                        section:'primary',
-			                        type:'button',
-			                        icon: 'edit'}"></button>
-                                <button data-win-control="WinJS.UI.Command" data-win-options="{
-			                        id:'cmdDelete',
-			                        label:'delete',
-			                        section:'primary',
-			                        type:'button',
-			                        icon: 'delete'}"></button>
-                            </div>
-                            <div id="noteToolbarEdit" data-win-control="WinJS.UI.ToolBar" style="display: none;">
-                                <button data-win-control="WinJS.UI.Command" data-win-options="{
-			                        id:'cmdGenerate',
-			                        label:'generate',
-			                        section:'primary',
-			                        type:'button',
-			                        icon: 'permissions'}"></button>
-                                <button data-win-control="WinJS.UI.Command" data-win-options="{
-			                        id:'cmdSave',
-			                        label:'confirm',
-			                        section:'primary',
-			                        type:'button',
-			                        icon: 'save'}"></button>
-                                <button data-win-control="WinJS.UI.Command" data-win-options="{
-			                        id:'cmdCancel',
-			                        label:'cancel',
-			                        section:'primary',
-			                        type:'button',
-			                        icon: 'cancel'}"></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> 
-
     </div>
+</div>
+<div id="message-box" class="message-box" tabindex="1">
+    <div class="card deep-purple darken-4">
+        <div class="card-content white-text">
+            <span id="message-box-title" class="card-title">Card Title</span>
+            <p id="message-box-text"></p>
+            <input id="message-box-textbox" type="text">
+        </div>
+        <div class="card-action">
+            <a id="message-box-close">Close</a>
+        </div>
+    </div>
+</div>
+<div id="root-app">
+    <div id="outside-app" class="root">
+    <div id="new-notebook-modal-dialog" class="modal">
+        <div class="modal-content">
+            <h4>New notebook</h4>
+            <br>
+            <div class="input-field">
+                <input id="notebook-name" type="email" placeholder="new notebook">
+                <label for="notebook-name" class="active">Notebook name</label>
+            </div>
+            <div class="input-field">
+                <input id="notebook-password" type="password" placeholder="notebook password">
+                <label for="notebook-password" class="active">Notebook password</label>
+            </div>
+            <div class="input-field">
+                <input id="notebook-password-confirm" type="password" placeholder="notebook password confirm">
+                <label for="notebook-password-confirm" class="active">Password confirm</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a id="new-notebook-create" class=" modal-action waves-effect waves-green btn-flat">Create</a>
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+    </div>
+    <div id="open-notebook-modal-dialog" class="modal">
+        <div class="modal-content">
+            <h4>Open notebook</h4>
+            <br>
+            <div class="input-field">
+                <input id="open-notebook-password" type="password" placeholder="notebook password">
+                <label for="open-notebook-password" class="active">Notebook password</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a id="notebook-open" class=" modal-action waves-effect waves-green btn-flat">Open</a>
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+    </div>
+    <div class="login-to-header">
+        <div class="title">sKeep</div>
+        <div class="subtitle">your password manager</div>
+        <a id="logout-button"><i class="small material-icons">power_settings_new</i></a>
+        <a id="login-button"><i class="fa fa-2x fa-dropbox" aria-hidden="true"></i></a>
+        <div class="spinner visible">
+            <div class="preloader-wrapper active">
+                <div class="spinner-layer spinner-white">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="notebooks">
+        <a id="new-notebook"
+           class="hide btn-floating z-depth-2 btn-large waves-effect waves-light red">
+            <i class="material-icons">add</i>
+        </a>
+        <div class="header deep-purple lighten-5"></div>
+        <div class="list">
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook" onclick="showNotesList()">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+            <div class="notebook">
+                <div>Password importanti</div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="inside-app" class="root hide">
+
+        <div id="buttons-view" class="bottom-right-buttons hide-on-small-only">
+            <a id="edit-note" class="btn-floating z-depth-2 btn-large waves-effect waves-light red"><i
+                    class="material-icons">mode_edit</i></a>
+        </div>
+        <div id="buttons-edit" class="bottom-right-buttons hide">
+            <a id="delete-note" class="btn-floating red darken-1 waves-effect waves-light"><i class="material-icons">delete</i></a>
+            <a id="generate-password" class="btn-floating blue waves-effect waves-light"><i class="material-icons">vpn_key</i></a>
+            <a id="cancel-edit" class="btn-floating yellow darken-4 waves-effect waves-light"><i class="material-icons">replay</i></a>
+            <a id="save-note" class="btn-floating green btn-large waves-effect waves-light"><i class="material-icons">save</i></a>
+        </div>
+
+        <div class="p-toolbar">
+            <ul id="top-right-dropdown" class="dropdown-content">
+                <li><a id="search-menu">search</a></li>
+                <li><a id="add-note-menu" href="#!">add note</a></li>
+            </ul>
+            <nav>
+                <div class="nav-wrapper z-depth-2">
+                    <div id="normal-bar">
+                        <ul class="left">
+                            <li><a id="back-button" class="waves-effect waves-light"><i class="fa fa-2x fa-angle-left" aria-hidden="true"></i></a></li>
+                        </ul>
+                        <span class="brand-logo">Password importanti</span>
+                        <ul id="top-right-container" class="right">
+                            <li><a id="search-button" class="waves-effect waves-light hide-on-small-only"><i
+                                    class="material-icons">search</i></a></li>
+                            <li><a id="add-note-button" href="#" class="waves-effect waves-light hide-on-small-only"><i class="material-icons">note_add</i></a>
+                            </li>
+                            <li><a class="dropdown-button waves-effect waves-light hide-on-med-and-up" data-constrainwidth="false"
+                                   data-beloworigin="true" data-alignment="right" href="#!"
+                                   data-activates="top-right-dropdown"><i class="material-icons">more_vert</i></a></li>
+                        </ul>
+                    </div>
+                    <form class="hide" id="search-bar">
+                        <div class="input-field">
+                            <input id="search-input" type="search" required>
+                            <label for="search-input"><i class="material-icons">search</i></label>
+                            <i id="search-close" class="material-icons">close</i>
+                        </div>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <div class="p-contents">
+            <div class="p-notes">
+                <ul id="notes-list">
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element selected waves-effect waves-light z-depth-2">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <div class="title">Amazon asdf asdf asdf asdf asdfasdf asdf asdf adsaf asdf asdf asd</div>
+                            <div class="link">http://www.amazon.it/sadf asdf sadf asdfas fasd fasdf asdf asdf sadf</div>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+                    <li class="notes-list-element waves-effect">
+                        <div>
+                            <span class="title">Amazon</span>
+                            <span class="link">http://www.amazon.it/</span>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+
+            <div class="p-note hide-on-small-only">
+
+                <div class="view">
+                    <div class="header">
+                        <h1></h1>
+                        <a></a>
+                    </div>
+                    <p class="yellow lighten-4 z-depth-1"></p>
+                </div>
+
+                <div class="edit hide">
+                    <div class="header">
+                        <input type="text" value="">
+                    </div>
+                    <textarea class="yellow lighten-4 z-depth-1"></textarea>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

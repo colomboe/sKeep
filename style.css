@@ -1,0 +1,429 @@
+* { padding: 0; margin: 0; }
+::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; }
+
+/***********************************/
+#modeIndicator {
+  position: absolute;
+  display: none;
+  z-index: 1;
+}
+@media (max-width: 600px) {
+  #modeIndicator {
+    z-index: 2;
+  }
+}
+@media (min-width: 992px) {
+  #modeIndicator {
+    z-index: 3;
+  }
+}
+/***********************************/
+
+html, body {
+    min-height: 100% !important;
+    height: 100%;
+    background-color: #D6D1C8;
+    user-select: none;
+    font-family: 'Roboto', sans-serif;
+    font-weight: lighter;
+}
+
+.root {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.bottom-right-buttons {
+  position: absolute;
+  z-index: 101;
+  bottom: 20px;
+  right: 20px;
+}
+
+.bottom-right-buttons a {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+nav .nav-wrapper {
+  background: linear-gradient(45deg, rgba(140,0,255,1) 0%, rgba(0,166,255,1) 100%);
+}
+
+nav .brand-logo {
+  font-size: 1.5rem;
+}
+
+.input-field input[type=search] ~ .mdi-navigation-close, .input-field input[type=search] ~ .material-icons {
+  color: inherit;
+}
+
+.top-right-dropdown {
+}
+
+.p-toolbar {
+  background-color: white;
+}
+
+.p-toolbar .fa-angle-left {
+  line-height: 57px;
+}
+
+.p-contents {
+  flex-grow: 1;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.p-notes {
+  flex-grow: 0.4;
+  background-color: #FFFFFF;
+  flex-direction: column;
+  overflow-y: scroll;
+  flex-basis: 10px;
+  padding: 20px;
+}
+
+.notes-list-element {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 10px;
+  font-weight: 300;
+  display: block;
+  /*opacity: 0;*/
+}
+
+.notes-list-element:hover {
+  background-color: #EDEBFF;
+}
+
+.p-notes .selected {
+  background-color: #D4D3F9;
+}
+
+.notes-list-element .title {
+  display: block;
+  font-size: 25px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.notes-list-element .link {
+  display: block;
+  color: blue;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.p-note {
+  flex-grow: 0.6;
+  display: flex;
+  background-color: #FFFFFF;
+  align-items: stretch;
+  flex-basis: 10px;
+  flex-direction: column;
+}
+
+.p-note .view {
+  margin-right: 10px;
+  margin-left: 15px;
+  box-sizing: border-box;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.p-note .view .header {
+  margin-bottom: 20px;
+  text-align: right;
+}
+
+.p-note .view .header h1 {
+  font-weight: lighter;
+  margin-bottom: 0;
+}
+
+.p-note .view .header a {
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.p-note .view p {
+  flex-grow: 1;
+  padding: 20px;
+  line-height: 24px;
+  font-weight: normal;
+  user-select: auto;
+  word-break: break-all;
+}
+
+.p-note .edit {
+  margin-right: 10px;
+  margin-left: 15px;
+  box-sizing: border-box;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.p-note .edit .header input {
+  margin-top: 39px;
+  font-size: 4.2rem;
+  text-align: right;
+}
+
+.p-note .edit textarea {
+  flex-grow: 1;
+  padding: 20px;
+  line-height: 24px;
+  font-weight: normal;
+  border: none;
+  resize: none;
+  margin-top: 41px;
+}
+
+/* LOGIN AND HEADER */
+
+.login-to-header {
+  position: absolute;
+  /*height: 26%;*/
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: linear-gradient(45deg, rgba(140,0,255,1) 0%, rgba(0,166,255,1) 100%);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  transition: height 1s;
+  transition-timing-function: ease;
+}
+
+.login-to-header-stage2 {
+  height: 26%;
+  transition: height 1s;
+  transition-timing-function: ease;
+}
+
+.login-to-header .title {
+  font-size: 52px;
+  align-self: center;
+}
+
+.login-to-header .subtitle {
+  font-size: 32px;
+  align-self: center;
+  font-style: italic;
+  opacity: 0.5;
+}
+
+.login-to-header #login-button {
+  position: absolute;
+  z-index: 300;
+  top: 10px;
+  left: 10px;
+  color: white;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 1s;
+  transition-timing-function: ease;
+}
+
+.login-to-header #logout-button {
+  position: absolute;
+  z-index: 300;
+  top: 10px;
+  right: 10px;
+  color: white;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 1s;
+  transition-timing-function: ease;
+}
+
+.login-to-header .visible {
+  opacity: 1 !important;
+  transition: opacity 1s, height 1s;
+  transition-timing-function: ease;
+}
+
+.spinner-white {
+  border-color: #ffffff;
+}
+
+.login-to-header .spinner {
+  margin-top: 20px;
+  text-align: center;
+  height: 0px;
+  opacity: 0;
+  transition: opacity 1s, height 1s;
+  transition-timing-function: ease;
+}
+
+/* NOTEBOOKS */
+
+.notebooks {
+  background-color: white;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.notebooks .header {
+  flex-grow: 0.25;
+  flex-basis: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.notebooks .list {
+  flex-grow: 0.75;
+  flex-basis: 10px;
+  text-align: center;
+  overflow-y: scroll;
+}
+
+.notebooks .list .notebook {
+  width: 100%;
+  height: 100px;
+  border-bottom: solid 1px lightgray;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.notebooks .list :hover {
+  background-color: #e7f2ff;
+}
+
+.notebooks .list .notebook :first-child {
+  align-self: center;
+  font-size: 24px;
+}
+
+#new-notebook {
+  position: absolute;
+  z-index: 250;
+  bottom: 20px;
+  right: 20px;
+}
+
+
+/* WAIT PANEL */
+
+.wait {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.9);
+  z-index: 2000;
+  justify-content: center;
+  flex-direction: column;
+  visibility: hidden;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.3s;
+  transition-timing-function: ease;
+}
+
+.wait :first-child {
+  text-align: center;
+}
+
+.wait-visible {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s;
+  transition-timing-function: ease;
+}
+
+/* MESSAGE BOX */
+
+.message-box {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.9);
+  z-index: 510;
+  justify-content: center;
+  flex-direction: column;
+  visibility: hidden;
+  display: flex;
+  opacity: 0;
+  transition: visibility 0s linear 0.3s, opacity 0.3s;
+  transition-timing-function: ease;
+}
+
+.message-box .card {
+  width: 50%;
+  align-self: center;
+}
+.message-box .card .card-action {
+  text-align: right;
+}
+
+.message-box a {
+  cursor: pointer;
+}
+
+.message-box-visible {
+  opacity: 1;
+  visibility: visible;
+  transition-timing-function: ease;
+  transition-delay: 0s;
+}
+
+/* ANIMATIONS */
+
+#root-app {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+#inside-app {
+  position: absolute;
+  z-index: 300;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  transform: translateX(-100%);
+}
+
+.slide-in {
+  animation: slide-in 0.5s forwards;
+}
+
+.slide-out {
+  animation: slide-out 0.5s forwards;
+}
+
+@keyframes slide-in {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0%); }
+}
+
+@keyframes slide-out {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+

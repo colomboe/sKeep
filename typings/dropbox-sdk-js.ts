@@ -3,8 +3,8 @@ declare namespace DropboxSdkJs {
     class Dropbox {
         constructor(options: { clientId: string });
         getAuthenticationUrl(redirectUri: string, state?: string): string;
-        authTokenRevoke(token: string): Promise<any>;
-        setAccessToken(token: string);
+        authTokenRevoke(): Promise<any>;
+        setAccessToken(token: string): any;
         filesListFolder(arg: FileListFolderArgs): Promise<FilesListFolderResult>;
         filesDownload(arg: 	FilesDownloadArg): Promise<FilesFileMetadata>;
         filesGetMetadata(arg: FilesGetMetadataArg): Promise<FilesFileMetadata>;

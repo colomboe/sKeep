@@ -1,0 +1,36 @@
+@media only screen and (max-width: 600px) {
+
+.p-notes {
+	flex-grow: 1;
+}
+
+.p-note {
+	flex-basis: inherit;
+	width: 100%;
+}
+
+.p-note .edit {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	width: 100%;
+	height: 100%;
+	background-color: white;
+	margin: 0px;
+	z-index: 100;
+}
+
+.p-note .edit .header input {
+	margin-top: 0px;
+	font-size: 1.5em;
+	text-align: left;
+}
+
+.p-note .edit textarea {
+	flex-grow: 1;
+	margin-top: 5px;
+}
+
+}
