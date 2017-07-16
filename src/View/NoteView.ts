@@ -4,7 +4,7 @@ class NoteView extends View {
 
     public onBackClicked: () => void;
     public onShowPassword: (password: string) => void;
-    public onCopyPassword: (password: string) => void;
+    public onCopyText: (text: string) => void;
     public onStartEditing: () => void;
     public onCancelEditing: () => void;
     public onSaveChanges: () => void;
@@ -17,6 +17,7 @@ class NoteView extends View {
         super();
         (<any>window).showdown.setOption("simpleLineBreaks", true);
         (<any>window).showdown.setOption("simplifiedAutoLink", false);
+        (<any>window).showdown.setOption("strikethrough", true);
         this.markdownConverter = new (<any>window).showdown.Converter();
     }
 
@@ -42,6 +43,7 @@ class NoteView extends View {
         $(".p-note .view .header h1").text(entry.title);
         $(".p-note .view .header a").text(entry.link);
         $(".p-note .view p").html(this.format(entry.real));
+        this.setupUsernameLinks(entry.real);
         this.setupPasswordLinks(entry.real);
 
         if (UI.isMobile()) {
@@ -99,17 +101,28 @@ class NoteView extends View {
                                    .replace(/([^\/\n])(www\S+)/g, "$1<$2>");
         return this.markdownConverter.makeHtml(prepared)
             .replace(/<a\s/g, "<a target=\"_blank\" ")
+            .replace(/###.+?###/g, (m: string) =>
+                m.replace(/###/g, "")
+                + " <a id=\"usr_copy_" + Utils.sha1hex(m) + "\" href=\"#\">[" + Txt.s("COPY_PWD") + "]</a>"
+            )
             .replace(/\$\$\$.+?\$\$\$/g, (m: string) =>
                 "<a id=\"pwd_" + Utils.sha1hex(m) + "\" href=\"#\">●●●●●●●●●●●●●●●●</a>"
                 + " <a id=\"pwd_copy_" + Utils.sha1hex(m) + "\" href=\"#\">[" + Txt.s("COPY_PWD") + "]</a>"
             );
     }
 
+    private setupUsernameLinks(real: string): void {
+        var matched = real.match(/###.+?###/g);
+        if (matched !== null) matched.map(p => {
+            $("#usr_copy_" + Utils.sha1hex(p)).click(() => this.onCopyText(p.replace(/###/g, "")));
+        });
+    }
+
     private setupPasswordLinks(real: string): void {
         var matched = real.match(/\$\$\$.+?\$\$\$/g);
         if (matched !== null) matched.map(p => {
             $("#pwd_" + Utils.sha1hex(p)).click(() => this.onShowPassword(p.replace(/\$\$\$/g, "")));
-            $("#pwd_copy_" + Utils.sha1hex(p)).click(() => this.onCopyPassword(p.replace(/\$\$\$/g, "")));
+            $("#pwd_copy_" + Utils.sha1hex(p)).click(() => this.onCopyText(p.replace(/\$\$\$/g, "")));
         });
     }
 
