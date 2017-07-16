@@ -13,7 +13,7 @@ class NoteController extends Controller {
         this.noteView = noteView;
         noteView.onBackClicked = () => this.onBackToNotes();
         noteView.onShowPassword = (p: string) => this.showPassword(p);
-        noteView.onCopyPassword = (p: string) => this.copyPassword(p);
+        noteView.onCopyText = (p: string) => this.copyText(p);
         noteView.onStartEditing = () => this.startEditing();
         noteView.onCancelEditing = () => this.cancelEditing();
         noteView.onSaveChanges = () => this.saveChanges();
@@ -34,7 +34,7 @@ class NoteController extends Controller {
         this.view.showForCopy(Txt.s("VIEW_PASSWORD_TITLE"), Txt.s("VIEW_PASSWORD_TEXT"), password);
     }
 
-    private copyPassword(password: string): void {
+    private copyText(password: string): void {
         Utils.toClipboard(password);
         (<any>window).Materialize.toast('Copied to clipboard!', 4000);
     }
