@@ -35,7 +35,7 @@ class Domain {
 
     public async createNewNotebook(name: string, password: string): Promise<void> {
         var notebook: Notebook = { name: name, entries: [{ title: "New note", real: "Insert your text here...", link: null }] };
-        var encoded = this.fileFormat.encode(notebook, password);
+	var encoded: Uint8Array = await this.fileFormat.encode(notebook, password);
         await this.storage.saveFile(name + ".skeep", encoded);
         await this.loadNotebooks();
     }
