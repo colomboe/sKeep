@@ -8,8 +8,11 @@ class Application {
         this.domain = config.domain(config.storage(), config.fileFormat());
         this.ui = config.ui(this.domain);
 
-        if (await this.domain.isLogged())
+        let loginData = await this.domain.isLogged();
+        if (loginData.logged) {
+            this.domain.updateLoginStats(loginData);
             await this.ui.setState(UIState.LOADING_NOTEBOOKS);
+        }
         else
             await this.ui.setState(UIState.LOGIN);
     }

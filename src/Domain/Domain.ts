@@ -12,7 +12,7 @@ class Domain {
         this.fileFormat = fileFormat;
     }
 
-    public async isLogged(): Promise<boolean> {
+    public async isLogged(): Promise<LoginData> {
         return this.storage.alreadyLogged();
     }
 
@@ -92,6 +92,10 @@ class Domain {
         return newNote;
     }
 
+    public updateLoginStats(loginData: LoginData) {
+        
+    }
+
     private generateUniqueNoteTitle() {
         var counter: number = 1;
         var title: string;
@@ -115,4 +119,5 @@ class Domain {
     private generateNewNoteTitle(counter: number): string {
         return Txt.s("NEW_NOTE_TITLE") + ((counter > 1) ? " " + counter : "");
     }
+
 }

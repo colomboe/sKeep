@@ -1,10 +1,10 @@
 ﻿class DropboxStorageClient implements StorageClient {
 
-    private static key: string = "DROPBOX_KEY_HERE";
+    private static key: string = "h0jgf9nop7iztoc";
     private client: Dropbox = null;
     private token: string;
 
-    public async alreadyLogged(): Promise<boolean> {
+    public async alreadyLogged(): Promise<LoginData> {
 
         if (this.client == null)
             this.client = new Dropbox({ clientId: DropboxStorageClient.key });
@@ -21,7 +21,7 @@
             else {
                 localStorage.removeItem("skeep-state");
                 try { await this.client.authTokenRevoke(); } catch (e) { }
-                return false;
+                return { logged: false };
             }
         }
         else {
@@ -34,17 +34,17 @@
 
         if (this.token != null) {
             try {
-                await this.listFiles();
-                return true;
+                var user = await this.client.usersGetCurrentAccount();
+                return { logged: false, email: user.email, name: user.name.display_name };
             }
             catch (e) {
                 localStorage.removeItem("skeep-state");
                 localStorage.removeItem("skeep-token");
-                return false;
+                return { logged: false };
             }
         }
         else
-            return false;
+            return { logged: false };
     }
 
     public login(): void {
