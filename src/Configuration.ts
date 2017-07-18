@@ -1,8 +1,14 @@
 class Configuration {
 
+    private readonly settings: Settings;
+
+    constructor() {
+        this.settings = new AppSettings();
+    }
+
     public storage(): StorageClient {
         // return new MockStorageClient();
-        return new DropboxStorageClient();
+        return new DropboxStorageClient(this.settings.dropboxKey());
     }
 
     public fileFormat(): FileFormat {
@@ -18,4 +24,9 @@ class Configuration {
         return new Domain(storage, fileFormat);
     }
 
+}
+
+interface Settings {
+
+    dropboxKey(): string;
 }

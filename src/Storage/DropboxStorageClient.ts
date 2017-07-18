@@ -1,13 +1,14 @@
 ﻿class DropboxStorageClient implements StorageClient {
 
-    private static key: string = "h0jgf9nop7iztoc";
-    private client: Dropbox = null;
+    private readonly client: Dropbox;
     private token: string;
 
-    public async alreadyLogged(): Promise<LoginData> {
+    public constructor(key: string) {
 
-        if (this.client == null)
-            this.client = new Dropbox({ clientId: DropboxStorageClient.key });
+        this.client = new Dropbox({ clientId: key });
+    }
+
+    public async alreadyLogged(): Promise<boolean> {
 
         var urlToken: string = this.getAccessTokenFromUrl();
         if (!!urlToken) {
