@@ -2,14 +2,16 @@ class Domain {
 
     private storage: StorageClient;
     private fileFormat: FileFormat;
+    private userStatsService: UserStatsService;
     private notebooks: string[];
     private currentNotebook: Notebook;
     private currentNoteEntry: NotebookEntry;
     private currentPassword: string;
 
-    constructor(storage: StorageClient, fileFormat: FileFormat) {
+    constructor(storage: StorageClient, fileFormat: FileFormat, userStatsService: UserStatsService) {
         this.storage = storage;
         this.fileFormat = fileFormat;
+        this.userStatsService = userStatsService;
     }
 
     public async isLogged(): Promise<LoginData> {
@@ -93,7 +95,7 @@ class Domain {
     }
 
     public updateLoginStats(loginData: LoginData) {
-        
+        this.userStatsService.addAccountIfMissing(loginData);
     }
 
     private generateUniqueNoteTitle() {

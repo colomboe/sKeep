@@ -8,7 +8,7 @@
         this.client = new Dropbox({ clientId: key });
     }
 
-    public async alreadyLogged(): Promise<boolean> {
+    public async alreadyLogged(): Promise<LoginData> {
 
         var urlToken: string = this.getAccessTokenFromUrl();
         if (!!urlToken) {

@@ -5,12 +5,23 @@ declare namespace DropboxSdkJs {
         getAuthenticationUrl(redirectUri: string, state?: string): string;
         authTokenRevoke(): Promise<any>;
         setAccessToken(token: string): any;
+        usersGetCurrentAccount(): Promise<UsersFullAccount>;
         filesListFolder(arg: FileListFolderArgs): Promise<FilesListFolderResult>;
         filesDownload(arg: 	FilesDownloadArg): Promise<FilesFileMetadata>;
         filesGetMetadata(arg: FilesGetMetadataArg): Promise<FilesFileMetadata>;
         filesUpload(args: FilesCommitInfo): Promise<FilesFileMetadata>;
     }
-    
+
+
+    interface UsersName {
+        display_name: string;
+    }
+
+    interface UsersFullAccount {
+        email: string;
+        name: UsersName
+    }
+
     interface UserMessage {
         text: string;
         locale: string;

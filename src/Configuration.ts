@@ -7,26 +7,30 @@ class Configuration {
     }
 
     public storage(): StorageClient {
-        // return new MockStorageClient();
-        return new DropboxStorageClient(this.settings.dropboxKey());
+        return new MockStorageClient();
+        // return new DropboxStorageClient(this.settings.dropboxKey());
     }
 
     public fileFormat(): FileFormat {
-        // return new PlainFileFormat();
-        return new FileFormatV2();
+        return new PlainFileFormat();
+        // return new FileFormatV2();
     }
 
     public ui(domain: Domain): UI {
         return new UI(domain);
     }
 
-    public domain(storage: StorageClient, fileFormat: FileFormat): Domain {
-        return new Domain(storage, fileFormat);
+    public domain(storage: StorageClient, fileFormat: FileFormat, userStatsService: UserStatsService): Domain {
+        return new Domain(storage, fileFormat, userStatsService);
     }
 
+    public userStatsService(): UserStatsService {
+        return new HttpUserStatsService(this.settings.userEndpoint());
+    }
 }
 
 interface Settings {
 
     dropboxKey(): string;
+    userEndpoint(): string;
 }

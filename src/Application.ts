@@ -5,7 +5,7 @@ class Application {
 
     public async start(): Promise<void> {
         var config = new Configuration();
-        this.domain = config.domain(config.storage(), config.fileFormat());
+        this.domain = config.domain(config.storage(), config.fileFormat(), config.userStatsService());
         this.ui = config.ui(this.domain);
 
         let loginData = await this.domain.isLogged();

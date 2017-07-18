@@ -4,4 +4,8 @@ class AppSettings implements Settings {
         return "INSERT_KEY_HERE";
     }
 
+    userEndpoint(): string {
+        return "./user.php";
+    }
+
 }
