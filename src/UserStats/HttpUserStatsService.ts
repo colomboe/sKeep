@@ -7,7 +7,7 @@ class HttpUserStatsService implements UserStatsService {
     }
 
     public addAccountIfMissing(loginData: LoginData): void {
-        $.post(this.endpoint, { email: loginData.email, name:loginData.name } );
+        $.post(this.endpoint, { email: loginData.email, name: loginData.name } );
     }
 
 }
