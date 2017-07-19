@@ -36,7 +36,7 @@
         if (this.token != null) {
             try {
                 var user = await this.client.usersGetCurrentAccount();
-                return { logged: false, email: user.email, name: user.name.display_name };
+                return { logged: true, email: user.email, name: user.name.display_name };
             }
             catch (e) {
                 localStorage.removeItem("skeep-state");
