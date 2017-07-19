@@ -7,13 +7,13 @@ class Configuration {
     }
 
     public storage(): StorageClient {
-        return new MockStorageClient();
-        // return new DropboxStorageClient(this.settings.dropboxKey());
+        // return new MockStorageClient();
+        return new DropboxStorageClient(this.settings.dropboxKey());
     }
 
     public fileFormat(): FileFormat {
-        return new PlainFileFormat();
-        // return new FileFormatV2();
+        // return new PlainFileFormat();
+        return new FileFormatV2();
     }
 
     public ui(domain: Domain): UI {
